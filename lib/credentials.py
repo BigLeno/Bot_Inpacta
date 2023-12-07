@@ -4,8 +4,6 @@ from os import getenv
 from logging import basicConfig, warning, info, INFO
 from typing import Tuple
 
-
-
 def get_credentials() -> Tuple[str, str, str]:
     """
         Função para pegar as credenciais do .env
@@ -23,4 +21,3 @@ def get_credentials() -> Tuple[str, str, str]:
         info("Variáveis de ambiente carregadas com sucesso.")
 
     return token, name_bot, admin
-
