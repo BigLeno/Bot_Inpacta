@@ -1,13 +1,8 @@
 from telebot import TeleBot
 
-from dotenv import load_dotenv
-from os import getenv
+from lib.credentials import get_credentials
 
-
-load_dotenv()
-token = getenv('TOKEN')
-nameBot = getenv('NAME_BOT')
-userAdmin = getenv('ADMIN')
+token, name_bot, admin = get_credentials() 
 
 bot = TeleBot(token)
 
