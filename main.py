@@ -1,12 +1,15 @@
-import telebot
+from telebot import TeleBot
 
-nameBot = '@Inpacta_bot'
+from dotenv import load_dotenv
+from os import getenv
 
-user = ['Rutileno_Gabriel']
 
-token = '6659921589:AAG0GDyZFJt1thxg1r6WkhqeNPvlk0wh19Q'
+load_dotenv()
+token = getenv('TOKEN')
+nameBot = getenv('NAME_BOT')
+userAdmin = getenv('ADMIN')
 
-bot = telebot.TeleBot(token)
+bot = TeleBot(token)
 
 def verify(mensagem):
     if mensagem.text == "start":
