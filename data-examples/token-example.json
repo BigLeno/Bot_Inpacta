@@ -1,0 +1,6 @@
+{
+    "token": "SEU-TOKEN", 
+    "client_secret": "SEU-CLIENT-SECRET", 
+    "scopes": ["SEU-ESCOPO"], 
+    "expiry": "SUA-DATA"
+    }
