@@ -100,7 +100,7 @@ def get_data_from_sheets(day, time):
             return False
 
 
-# if __name__ == "__main__":
-#   day = input("Digite o dia: ")
-#   time = input("Digite a hora: ")
-#   print(get_data_from_sheets(day, time))
+if __name__ == "__main__":
+  day = input("Digite o dia: ")
+  time = input("Digite a hora: ")
+  print(get_data_from_sheets(day, time))
