@@ -9,7 +9,10 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from credentials import get_google_credentials
+# Somente quando for rodar localmente
+# from credentials import get_google_credentials
+
+from modules.lib.credentials import get_google_credentials
 
 from logging import basicConfig, warning, info, INFO
 
