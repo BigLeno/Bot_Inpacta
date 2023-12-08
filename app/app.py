@@ -1,6 +1,7 @@
 from telebot import TeleBot
 
-from lib.credentials import get_credentials
+from modules.lib.credentials import get_credentials
+from modules.lib.googleservices import get_data_from_sheets
 
 token, name_bot, admin = get_credentials() 
 
