@@ -18,7 +18,6 @@ bot = TeleBot(token)
 users = Users()
 
 info("Bot iniciado com sucesso!")
-
     
 def get_data(message):
     chatid = message.chat.id
@@ -27,9 +26,8 @@ def get_data(message):
     sobrenome = message.from_user.last_name
     text = message.text
     mensagem = f"""ChatID: {chatid}\nUsuário: {usuario}\nNome e sobrenome : {nome} {sobrenome}\nMensagem: {text}"""
-    for user in users.list_users:
-        if user.privileges == 'admin':
-            get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={user.id}&text={mensagem}')
+    admin = [user for user in users.list_users if user.privileges == 'admin']
+    get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={mensagem}')
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -87,7 +85,7 @@ def send_horarios(message):
     "horario matutino" (Matutino, Vespertino ou Noturno)"""
     bot.reply_to(message, data)
 
-@bot.message_handler(func=lambda message: "horario" in message.text.lower())
+@bot.message_handler(func=lambda message: "horario" in message.text.lower() or "horário" in message.text.lower())
 def send_horarios_matutino(message):
     get_data(message)
     chatIDpessoa=message.chat.id
@@ -96,17 +94,17 @@ def send_horarios_matutino(message):
 
     if "matutino" in message.text.lower():
         msg = "Horário do turno Matutino"
-        img = open(f"app\modules\images\horarios-matutino.png", 'rb')
+        img = open(f"app/modules/images/horarios-matutino.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "vespertino" in message.text.lower():
         msg = "Horário do turno Vespertino"
-        img = open(f"app\modules\images\horarios-vespertino.png", 'rb')
+        img = open(f"app/modules/images/horarios-vespertino.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "noturno" in message.text.lower():
         msg = "Horário do turno Noturno"
-        img = open(f"app\modules\images\horarios-noturno.png", 'rb')
+        img = open(f"app/modules/images/horarios-noturno.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "matutino" not in message.text.lower() and "vespertino" not in message.text.lower() and "noturno" not in message.text.lower():
