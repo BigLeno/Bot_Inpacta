@@ -113,8 +113,7 @@ def send_horarios_matutino(message):
         bot.reply_to(message, msg)
     
     
-    
-
 
 bot.polling()
+get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot finalizado com sucesso!"}')
 info("Bot finalizado com sucesso!")
