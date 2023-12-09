@@ -16,8 +16,10 @@ token, name_bot, admin = get_credentials()
 bot = TeleBot(token)
 
 users = Users()
+admin = [user for user in users.list_users if user.privileges == 'admin']
 
 info("Bot iniciado com sucesso!")
+get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot iniciado com sucesso!"}')
     
 def get_data(message):
     chatid = message.chat.id
@@ -26,7 +28,6 @@ def get_data(message):
     sobrenome = message.from_user.last_name
     text = message.text
     mensagem = f"""ChatID: {chatid}\nUsuário: {usuario}\nNome e sobrenome : {nome} {sobrenome}\nMensagem: {text}"""
-    admin = [user for user in users.list_users if user.privileges == 'admin']
     get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={mensagem}')
 
 @bot.message_handler(commands=['start'])
