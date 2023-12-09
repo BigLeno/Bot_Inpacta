@@ -1,9 +1,12 @@
-from telebot import TeleBot
-
-from modules.lib.credentials import get_credentials
-from modules.lib.googleservices import get_data_from_sheets
 
 from logging import basicConfig, warning, info, INFO
+from telebot import TeleBot
+from requests import get
+
+from modules.lib.credentials import get_credentials
+from modules.lib.dataprocess import get_data_from_sheets
+from modules.lib.users import Users
+
 
 # Definindo o nível do log
 basicConfig(level=INFO)
@@ -12,38 +15,107 @@ token, name_bot, admin = get_credentials()
 
 bot = TeleBot(token)
 
+users = Users()
+
 info("Bot iniciado com sucesso!")
 
-def ajuda(message):
-    if message.text == "ajuda":
-        return True
-
+    
+def get_data(message):
+    chatid = message.chat.id
+    usuario = message.from_user.username
+    nome = message.from_user.first_name
+    sobrenome = message.from_user.last_name
+    text = message.text
+    mensagem = f"""ChatID: {chatid}\nUsuário: {usuario}\nNome e sobrenome : {nome} {sobrenome}\nMensagem: {text}"""
+    for user in users.list_users:
+        if user.privileges == 'admin':
+            get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={user.id}&text={mensagem}')
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    data = """
-    Olá, aqui é o Bot da Inpacta digite "ajuda" para ver os comandos disponíveis"""
+    get_data(message)
+    data = """Olá, aqui é o Bot da Inpacta, para ver os comandos disponíveis digite:\n  /Ajuda """
     bot.reply_to(message, data)
 
-@bot.message_handler(func=ajuda)
+@bot.message_handler(func=lambda message: "ajuda" in message.text.lower())
 def send_help(message):
+    get_data(message)
     data = """
     Comandos disponíveis:
     /horarios - Exibe os horários
     /agendar - Agenda um horário
-    /bolsistas - Exibe os bolsistas"""
+    /bolsistas - Exibe os bolsistas
+    /coordenadores - Exibe os coordenadores
+    /sobre - Exibe informações sobre o bot
+    /ajuda - Exibe os comandos disponíveis
+    """
+    bot.reply_to(message, data)
+
+@bot.message_handler(commands=['sobre'])
+def send_sobre(message):
+    get_data(message)
+    data = """
+    Bot desenvolvido pela Inpacta, para mais informações acesse: https://sites.google.com/view/inpacta/"""
+    bot.reply_to(message, data)
+
+@bot.message_handler(commands=['agendar'])
+def send_agendar(message):
+    get_data(message)
+    data = """
+    Em desenvolvimento..."""
+    bot.reply_to(message, data)
+
+@bot.message_handler(commands=['coordenadores'])
+def send_coordenadores(message):
+    get_data(message)
+    data = """
+    Em desenvolvimento..."""
+    bot.reply_to(message, data)
+
+@bot.message_handler(commands=['bolsistas'])
+def send_horarios(message):
+    get_data(message)
+    data = """
+    Em desenvolvimento..."""
     bot.reply_to(message, data)
 
 @bot.message_handler(commands=['horarios'])
 def send_horarios(message):
+    get_data(message)
     data = """
-    Horários disponíveis:
-    Segunda: 12h, 14h, 16h
-    Terça: 12h, 14h, 16h
-    Quarta: 12h, 14h, 16h
-    Quinta: 12h, 14h, 16h
-    Sexta: 12h, 14h, 16h"""
+    Para ver os horários disponíveis digite:
+    "horario matutino" (Matutino, Vespertino ou Noturno)"""
     bot.reply_to(message, data)
+
+@bot.message_handler(func=lambda message: "horario" in message.text.lower())
+def send_horarios_matutino(message):
+    get_data(message)
+    chatIDpessoa=message.chat.id
+    bot.reply_to(message, "Aguarde um momento...")
+    print(chatIDpessoa)
+
+    if "matutino" in message.text.lower():
+        msg = "Horário do turno Matutino"
+        img = open(f"app\modules\images\horarios-matutino.png", 'rb')
+        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
+    
+    if "vespertino" in message.text.lower():
+        msg = "Horário do turno Vespertino"
+        img = open(f"app\modules\images\horarios-vespertino.png", 'rb')
+        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
+    
+    if "noturno" in message.text.lower():
+        msg = "Horário do turno Noturno"
+        img = open(f"app\modules\images\horarios-noturno.png", 'rb')
+        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
+    
+    if "matutino" not in message.text.lower() and "vespertino" not in message.text.lower() and "noturno" not in message.text.lower():
+        msg = "Horário inválido"
+        bot.reply_to(message, msg)
+    
+    
+    
+
 
 bot.polling()
 info("Bot finalizado com sucesso!")
