@@ -10,16 +10,14 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # Somente quando for rodar localmente
-from credentials import get_google_credentials
+# from credentials import get_google_credentials
 
-# from modules.lib.credentials import get_google_credentials
+from modules.lib.credentials import get_google_credentials
 
 from logging import basicConfig, warning, info, INFO
 
 # Definindo o nível do log
 basicConfig(level=INFO)
-
-
 
 # Variáveis de ambiente utilizadas
 client_directory, token_directory, scopes, sample_spreadsheet_id, sample_range_name = get_google_credentials()

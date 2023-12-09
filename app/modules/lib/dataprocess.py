@@ -2,10 +2,10 @@
 from logging import basicConfig, warning, info, INFO
 from datetime import datetime, timedelta
 
-# from modules.lib.googleservices import get_data_from_sheets
+from modules.lib.googleservices import get_sheets
 
 # Para rodar localmente
-from googleservices import get_sheets
+# from googleservices import get_sheets
 
 
 # Definindo o nível do log
@@ -110,7 +110,8 @@ def get_data_from_sheets(day, time):
             return False
           
 
-if __name__ == "__main__":
-  day = input("Digite o dia: ")
-  time = input("Digite a hora: ")
-  print(get_data_from_sheets(day, time))
+# if __name__ == "__main__":
+#   day = input("Digite o dia: ")
+#   time = input("Digite a hora: ")
+#   print(get_data_from_sheets(day, time))
+    
