@@ -10,20 +10,16 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # Somente quando for rodar localmente
-# from credentials import get_google_credentials
+from credentials import get_google_credentials
 
-from modules.lib.credentials import get_google_credentials
+# from modules.lib.credentials import get_google_credentials
 
 from logging import basicConfig, warning, info, INFO
 
 # Definindo o nível do log
 basicConfig(level=INFO)
 
-# Mapeia dias da semana para índices
-day_to_index = {'Segunda': 1, 'Terça': 2, 'Quarta': 3, 'Quinta': 4, 'Sexta': 5}
 
-# Lista de horários permitidos
-allowed_times = ['M12', 'M34', 'M56', 'T12', 'T34', 'T56', 'N12', 'N34']
 
 # Variáveis de ambiente utilizadas
 client_directory, token_directory, scopes, sample_spreadsheet_id, sample_range_name = get_google_credentials()
@@ -57,53 +53,6 @@ def get_sheets():
       warning(f"Foi encontrado um erro de conexão http {err}")
       return False
 
-def get_data_from_sheets(day, time):
-
-    result = get_sheets()
-
-    if not result:
-      return False
-
-    day_index = day_to_index.get((day.lower()).capitalize(), -1)
-    formated_time = (time.lower()).capitalize()
-
-    for row in result:
-      if all(item not in row for item in ['M12','N34','DIAS DA SEMANA']) and row:
-          if (row[0] == formated_time and 
-            0 < day_index < len(row) and 
-            formated_time in allowed_times and 
-            row[day_index] != 'X'):
-
-            bolsistas = [bolsista.strip() for bolsista in row[day_index].split('/')]
-
-            if len(bolsistas) == 1:
-                info("Bolsista encontrado!")
-                return f"Bolsista: {bolsistas[0]}"
-            elif len(bolsistas) == 2:
-                info("Dois bolsistas encontrados!")
-                return f"Bolsistas: {bolsistas[0]} e {bolsistas[1]}"
-            elif len(bolsistas) == 3:
-                info("Três bolsistas encontrados!")
-                return f"Bolsistas: {bolsistas[0]}, {bolsistas[1]} e {bolsistas[2]}"
-            
-          elif (row[0] == formated_time and 
-              row[day_index] == 'X' and 
-              formated_time in allowed_times and 
-              0 < day_index < len(row)):
-            
-            info("Horário vazio")
-            return "Não tem bolsista neste horário."
-          
-          elif formated_time not in allowed_times and 0 < day_index < len(row):
-            warning("Horário inválido.")
-            return False
-          
-          elif not (0 < day_index < len(row)):
-            warning("Dia inválido.")
-            return False
 
 
-# if __name__ == "__main__":
-#   day = input("Digite o dia: ")
-#   time = input("Digite a hora: ")
-#   print(get_data_from_sheets(day, time))
+
