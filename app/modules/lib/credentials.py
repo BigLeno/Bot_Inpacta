@@ -4,7 +4,7 @@ from os import getenv
 from logging import basicConfig, warning, info, INFO
 from typing import Tuple
 
-def get_credentials() -> Tuple[str, str, str]:
+def get_credentials() -> Tuple[str, str, str, str]:
     """
         Função para pegar as credenciais do .env
     """
@@ -13,14 +13,15 @@ def get_credentials() -> Tuple[str, str, str]:
     token = getenv('TOKEN')
     name_bot = getenv('NAME_BOT')
     admin = getenv('ADMIN')
+    absolutepath = getenv('ABSOLUTE_PATH')
 
-    if not token or not name_bot or not admin:
+    if not token or not name_bot or not admin or not absolutepath:
         warning("Uma ou mais variáveis de ambiente do telegram estão faltando.")
         return False
     else:
         info("Variáveis de ambiente do telegram carregadas com sucesso.")
 
-    return token, name_bot, admin
+    return token, name_bot, admin, absolutepath
 
 def get_users_id() -> Tuple[str, str, str, str, str, str]:
     """

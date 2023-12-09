@@ -11,7 +11,7 @@ from modules.lib.users import Users
 # Definindo o nível do log
 basicConfig(level=INFO)
 
-token, name_bot, admin = get_credentials() 
+token, name_bot, admin, absolutepath = get_credentials() 
 
 bot = TeleBot(token)
 
@@ -95,17 +95,17 @@ def send_horarios_matutino(message):
 
     if "matutino" in message.text.lower():
         msg = "Horário do turno Matutino"
-        img = open(f"app/modules/images/horarios-matutino.png", 'rb')
+        img = open(f"{absolutepath}modules/images/horarios-matutino.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "vespertino" in message.text.lower():
         msg = "Horário do turno Vespertino"
-        img = open(f"app/modules/images/horarios-vespertino.png", 'rb')
+        img = open(f"{absolutepath}modules/images/horarios-vespertino.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "noturno" in message.text.lower():
         msg = "Horário do turno Noturno"
-        img = open(f"app/modules/images/horarios-noturno.png", 'rb')
+        img = open(f"{absolutepath}modules/images/horarios-noturno.png", 'rb')
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
     if "matutino" not in message.text.lower() and "vespertino" not in message.text.lower() and "noturno" not in message.text.lower():
