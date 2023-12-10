@@ -49,7 +49,7 @@ def get_day(user_input:str) -> int or None:
 def get_time_interval(time) -> str:
     """Retorna o intervalo de tempo correspondente ao input do usuário."""
 
-    if time in allowed_times:
+    if (time.lower()).capitalize() in allowed_times:
         return time
     else:
         if time.isdigit():
@@ -88,13 +88,13 @@ def get_data_from_sheets(day, time):
 
             if len(bolsistas) == 1:
                 info("Bolsista encontrado!")
-                return f"Bolsista: {bolsistas[0]}"
+                return bolsistas[0]
             elif len(bolsistas) == 2:
                 info("Dois bolsistas encontrados!")
-                return f"Bolsistas: {bolsistas[0]} e {bolsistas[1]}"
+                return bolsistas[0], bolsistas[1]
             elif len(bolsistas) == 3:
                 info("Três bolsistas encontrados!")
-                return f"Bolsistas: {bolsistas[0]}, {bolsistas[1]} e {bolsistas[2]}"
+                return bolsistas[0], bolsistas[1], bolsistas[2]
             
           elif (row[0] == formated_time and 
               row[day_index] == 'X' and 
