@@ -4,6 +4,7 @@ from json import load, dump
 from telebot import TeleBot
 from requests import get
 from uuid import uuid4
+from time import strptime
 
 from modules.lib.credentials import get_credentials
 from modules.lib.dataprocess import get_data_from_sheets
@@ -51,6 +52,27 @@ def read_and_remove_first_item(filename=cachedirectory):
         file.truncate()  # Remove o restante do conteúdo do arquivo
 
     return first_item
+
+def is_valid_date(date_str):
+    try:
+        if strptime(date_str, '%d/%m'):
+            return True
+        if date_str in ['hoje', 'amanhã', 'amanha']:
+            return True
+    except ValueError:
+        return False
+
+def is_valid_time(time_str):
+    try:
+        if strptime(time_str, '%H:%M'):
+            return True
+        if strptime(time_str, '%H'):
+            return True
+        if 'h'  in time_str.lower():
+            return True
+        
+    except ValueError:
+        return False
     
 def get_data(message):
     chatid = message.chat.id
@@ -129,6 +151,14 @@ def handle_schedule(message):
         bot.reply_to(message, "Formato de mensagem inválido. \nUse: 'agendar 01/01 10:00 encontro com o gestor'")
     else:
         day, time, content = args[1], args[2], args[3:]
+        if not is_valid_date(day):
+            bot.reply_to(message, "Data inválida. Use o formato dd/mm.")
+            return
+        
+        if not is_valid_time(time):
+            bot.reply_to(message, "Horário inválido. Use o formato hh:mm.")
+            return
+        
         data = get_data_from_sheets(day, time)
         if isinstance(data, str):
             bot.reply_to(message, data)
