@@ -4,7 +4,7 @@ from json import load, dump
 from telebot import TeleBot
 from requests import get
 from uuid import uuid4
-from time import strptime
+from time import strptime, sleep
 
 from modules.lib.credentials import get_credentials
 from modules.lib.dataprocess import get_data_from_sheets
@@ -23,56 +23,72 @@ admin = [user for user in users.list_users if user.privileges == 'admin']
 user_ids = [user.id for user in users.list_users]
 user_names = [user.name for user in users.list_users]
 
+time_sleep = 0.2
+
 info("Bot iniciado com sucesso!")
 get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot iniciado com sucesso!"}')
+sleep(time_sleep)
 
-def write_json(data, identificador, filename=cachedirectory):
+def write_json(data, identificador, filename=cachedirectory) -> str:
+    """Função para escrever no arquivo json."""
+
     try:
         with open(filename, 'r') as file:
             file_data = load(file)
     except FileNotFoundError:
+        warning("Não encontrei o arquivo 'cache.json'.")
         file_data = {}
 
     file_data[identificador] = data
 
-    with open(filename, 'w') as file:
-        dump(file_data, file)
+    try:
+        with open(filename, 'w') as file:
+            dump(file_data, file)
+    except FileNotFoundError:
+        warning("Não encontrei o arquivo 'cache.json'.")
+        return "Não encontrei o arquivo json."
 
-def read_and_remove_first_item(filename=cachedirectory):
-    with open(filename, 'r+') as file:
-        data = load(file)
-        items = list(data.items())
-        if len(items) == 0:
-            return "Não há mensagens para serem enviadas."
-        first_item = items.pop(0)
-        data = dict(items)
-
-        file.seek(0)  # Move o cursor para o início do arquivo
-        dump(data, file)
-        file.truncate()  # Remove o restante do conteúdo do arquivo
+def read_and_remove_first_item(filename=cachedirectory) -> tuple or str:
+    """Função para ler e remover o primeiro item do arquivo json."""
+    try:
+        with open(filename, 'r+') as file:
+            data = load(file)
+            items = list(data.items())
+            if len(items) == 0:
+                return "Não há mensagens para serem enviadas."
+            first_item = items.pop(0)
+            data = dict(items)
+            file.seek(0)  # Move o cursor para o início do arquivo
+            dump(data, file)
+            file.truncate()  # Remove o restante do conteúdo do arquivo
+    except FileNotFoundError:
+        warning("Não encontrei o arquivo 'cache.json'.")
+        return "Não encontrei o arquivo json."
 
     return first_item
 
-def is_valid_date(date_str):
+def is_valid_date(date_str) -> bool:
+    """Verifica se a data está no formato dd/mm."""
+
+    if date_str in ['hoje', 'amanhã', 'amanha']:
+        return True
+
     try:
-        if strptime(date_str, '%d/%m'):
-            return True
-        if date_str in ['hoje', 'amanhã', 'amanha']:
-            return True
+        strptime(date_str, '%d/%m')
+        return True
     except ValueError:
         return False
 
-def is_valid_time(time_str):
-    try:
-        if strptime(time_str, '%H:%M'):
+def is_valid_time(time_str) -> bool:
+    """Verifica se o horário está no formato hh:mm."""
+    formats = ['%H:%M', '%Hh', '%Hh%M', '%HH', '%HH%M']
+    for fmt in formats:
+        try:
+            strptime(time_str, fmt)
             return True
-        if strptime(time_str, '%H'):
-            return True
-        if 'h'  in time_str.lower():
-            return True
-        
-    except ValueError:
-        return False
+        except ValueError:
+            continue
+    return False
     
 def get_data(message):
     chatid = message.chat.id
@@ -80,17 +96,20 @@ def get_data(message):
     nome = message.from_user.first_name
     sobrenome = message.from_user.last_name
     text = message.text
+    info("Dados do usuário carregados.")
     mensagem = f"""ChatID: {chatid}\nUsuário: {usuario}\nNome e sobrenome : {nome} {sobrenome}\nMensagem: {text}"""
+    sleep(time_sleep)
     get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={mensagem}')
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def send_welcome(message) -> None:
     get_data(message)
     data = """Olá, aqui é o Bot da Inpacta, para ver os comandos disponíveis digite:\n  /Ajuda """
+    sleep(time_sleep)
     bot.reply_to(message, data)
 
 @bot.message_handler(func=lambda message: "sim" in message.text.lower() or "não" in message.text.lower() or "nao" in message.text.lower())
-def handle_specific_chats(message):
+def handle_specific_chats(message) -> None:
     """Função para gerenciar as mensagens específicas."""
     get_data(message)
     if "sim" in message.text.lower():
@@ -103,10 +122,12 @@ def handle_specific_chats(message):
         recipient = data[1]['recipient']
         msg = f'Olá {data[1]["name"]}, {message.from_user.first_name} {message.from_user.last_name} aceitou o seu pedido. \nConteúdo: {data[1]["content"]}'
         get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={recipient}&text={msg}')
+        sleep(time_sleep)
         bot.reply_to(message, "Mensagem enviada com sucesso!")
     elif "não" in message.text.lower() or "nao" in message.text.lower():
         msg = "Ok, aguarde um momento..."
         bot.reply_to(message, msg)
+        sleep(time_sleep)
         data = read_and_remove_first_item()
         if isinstance(data, str):
             bot.reply_to(message, data)
@@ -114,6 +135,7 @@ def handle_specific_chats(message):
         recipient = data[1]['recipient']
         msg = f'Olá {data[1]["name"]}, {message.from_user.first_name} {message.from_user.last_name} não aceitou o seu pedido. \nConteúdo: {data[1]["content"]}'
         get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={recipient}&text={msg}')
+        sleep(time_sleep)
         bot.reply_to(message, "Mensagem enviada com sucesso!")
 
 @bot.message_handler(func=lambda message: "ajuda" in message.text.lower())
@@ -146,11 +168,16 @@ def send_agendar(message):
 def handle_schedule(message):
     get_data(message)
     args = message.text.split()
-    print(args)
+    print(f" agendar args: {args}")
     if args[0].lower() != "agendar":
         bot.reply_to(message, "Formato de mensagem inválido. \nUse: 'agendar 01/01 10:00 encontro com o gestor'")
     else:
+        if len(args) < 4:
+            bot.reply_to(message, "Formato de mensagem inválido. \nUse: 'agendar 01/01 10:00 encontro com o gestor'")
+            return
+        
         day, time, content = args[1], args[2], args[3:]
+
         if not is_valid_date(day):
             bot.reply_to(message, "Data inválida. Use o formato dd/mm.")
             return
@@ -162,6 +189,8 @@ def handle_schedule(message):
         data = get_data_from_sheets(day, time)
         if isinstance(data, str):
             bot.reply_to(message, data)
+            return
+        
         else:
             recipient = message.chat.id
             content = ' '.join(content)
@@ -169,6 +198,7 @@ def handle_schedule(message):
             user_data = {'recipient': recipient, 'name': name, 'content': content, 'day_and_time': f'{day} {time}'}
             response = f'Entrei em contato com o(s) bolsista(s) e aguardando a resposta.'
             manage_delivery(data, user_data)
+            sleep(time_sleep)
             bot.reply_to(message, response)
 
 
@@ -185,6 +215,7 @@ def manage_delivery( data:tuple, user_data:dict):
         if name in data:
             recipient = user_ids[user_names.index(name)]
             msg = f'Olá {name}, {user_data["name"]} quer agendar um horário com você no dia {user_data["day_and_time"]}. \nConteúdo: {user_data["content"]}'
+            sleep(time_sleep)
             get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={recipient}&text={msg}')
 
 
@@ -196,7 +227,7 @@ def send_gestores(message):
     bot.reply_to(message, data)
 
 @bot.message_handler(commands=['bolsistas'])
-def send_horarios(message):
+def send_bolsistas(message):
     get_data(message)
     data = """
     Em desenvolvimento..."""
@@ -206,38 +237,56 @@ def send_horarios(message):
 def send_horarios(message):
     get_data(message)
     data = """
-    Para ver os horários disponíveis digite:
+    Os horários disponíveis são: \n   > matutino \n   > vespertino \n   > noturno \nExemplo: \n     "horarios matutino" \nExibe o horário do
     "horario matutino" """
     bot.reply_to(message, data)
 
-@bot.message_handler(func=lambda message: "horario" in message.text.lower() or "horário" in message.text.lower())
-def send_horarios_matutino(message):
+@bot.message_handler(func=lambda message: 
+                     "horario" in message.text.lower() 
+                     or "horário" in message.text.lower() 
+                     or "horários" in message.text.lower() 
+                     or "horarios" in message.text.lower() 
+                     and "/" not in message.text.lower()
+                     )
+def send_horarios_matutino(message) -> None:
     get_data(message)
     chatIDpessoa=message.chat.id
     bot.reply_to(message, "Aguarde um momento...")
-    print(chatIDpessoa)
+    args = message.text.split()
+    print(f" horarios args: {args}")
 
-    if "matutino" in message.text.lower():
+    if len(args) < 2:
+        msg = "Formato de mensagem inválido! \nPor favor, use: \n   'horarios matutino'"
+        sleep(time_sleep)
+        bot.reply_to(message, msg)
+        return
+
+    if args[1].lower() == "matutino":
         msg = "Horário do turno Matutino"
         img = open(f"{absolutepath}modules/images/horarios-matutino.png", 'rb')
+        sleep(time_sleep)
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
-    if "vespertino" in message.text.lower():
+    if args[1].lower() == "vespertino":
         msg = "Horário do turno Vespertino"
         img = open(f"{absolutepath}modules/images/horarios-vespertino.png", 'rb')
+        sleep(time_sleep)
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
-    if "noturno" in message.text.lower():
+    if args[1].lower() == "noturno":
         msg = "Horário do turno Noturno"
         img = open(f"{absolutepath}modules/images/horarios-noturno.png", 'rb')
+        sleep(time_sleep)
         get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
     
-    if "matutino" not in message.text.lower() and "vespertino" not in message.text.lower() and "noturno" not in message.text.lower():
+    if args[1].lower() not in ["matutino", "vespertino", "noturno"]:
         msg = "Horário inválido"
+        sleep(time_sleep)
         bot.reply_to(message, msg)
     
     
 
 bot.polling()
+sleep(time_sleep)
 get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot finalizado com sucesso!"}')
 info("Bot finalizado com sucesso!")
