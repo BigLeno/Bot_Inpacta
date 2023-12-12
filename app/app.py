@@ -129,8 +129,12 @@ def handle_schedule(message):
         else:
             recipient = message.chat.id
             content = ' '.join(content)
-            if  not message.from_user.last_name is None or not message.from_user.last_name is None:
+            if  not message.from_user.last_name is None :
+                name = message.from_user.first_name
+            if not message.from_user.last_name is None:
                 name = message.from_user.first_name + ' ' + message.from_user.last_name
+            if not message.from_user.username is None:
+                name = message.from_user.username
             else:
                 name = message.chat.id
             user_data = {'recipient': recipient, 'name': name, 'content': content, 'day_and_time': f'{day} {time}'}
