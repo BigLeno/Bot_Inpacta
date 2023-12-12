@@ -16,37 +16,55 @@ from modules.lib.credentials import get_google_credentials
 
 from logging import warning, info
 
-# Variáveis de ambiente utilizadas
-client_directory, token_directory, scopes, sample_spreadsheet_id, sample_range_name = get_google_credentials()
+class GoogleSheets:
 
-def get_sheets():
-  creds = None
-  if os.path.exists(token_directory):
-    creds = Credentials.from_authorized_user_file(token_directory, [scopes])
-  if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-      creds.refresh(Request())
-    else:
-      flow = InstalledAppFlow.from_client_secrets_file(client_directory, [scopes])
-      creds = flow.run_local_server(port=0)
-    with open(token_directory, "w") as token:
-      token.write(creds.to_json())
+  def __init__(self, sample_range_name='', sample_spreadsheet_id='') -> None:
+    """Função para inicializar a planilha do googleSheets.
+    Args:
+        sample_range_name (str, optional): Nome da planilha. Defaults to ''.
+        sample_spreadsheet_id (str, optional): Id da planilha. Defaults to ''.
+    """
+    if not sample_range_name or not sample_spreadsheet_id:
+      self.client_directory, self.token_directory, self.scopes, self.sample_spreadsheet_id, self.sample_range_name = get_google_credentials()
+    if sample_range_name:
+      self.sample_range_name = sample_range_name
+    if sample_spreadsheet_id:
+      self.sample_spreadsheet_id = sample_spreadsheet_id
+    info("Inicializando planilha do googleSheets...")
+    self.port = 0
+    self.creds = None
+    self.get_and_verify_acess()
 
-  try:
-    service = build("sheets", "v4", credentials=creds)
-    sheet = service.spreadsheets()
-    result = (sheet.values().get(spreadsheetId=sample_spreadsheet_id, range=sample_range_name).execute()).get("values", [])
+  def get_and_verify_acess(self) -> None:
+    """Função para pegar e verificar o acesso da planilha do googleSheets."""
+    if os.path.exists(self.token_directory):
+      self.creds = Credentials.from_authorized_user_file(self.token_directory, [self.scopes])
+    if not self.creds or not self.creds.valid:
+      if self.creds and self.creds.expired and self.creds.refresh_token:
+        self.creds.refresh(Request())
+      else:
+        flow = InstalledAppFlow.from_client_secrets_file(self.client_directory, [self.scopes])
+        self.creds = flow.run_local_server(port=self.port)
+      with open(self.token_directory, "w") as token:
+        token.write(self.creds.to_json())
 
-    if not result:
-      warning("Não foi encontrando nenhum dado na planilha do googleSheets.")
-      return False
+  def get_sheets(self):
+    """Função para pegar os dados da planilha do googleSheets."""
+    try:
+      service = build("sheets", "v4", credentials=self.creds)
+      sheet = service.spreadsheets()
+      result = (sheet.values().get(spreadsheetId=self.sample_spreadsheet_id, range=self.sample_range_name).execute()).get("values", [])
 
-    info("Planilha acessada com sucesso!")
-    return result
+      if not result:
+        warning("Não foi encontrando nenhum dado na planilha do googleSheets.")
+        return False
 
-  except HttpError as err:
-      warning(f"Foi encontrado um erro de conexão http {err}")
-      return False
+      info("Planilha acessada com sucesso!")
+      return result
+
+    except HttpError as err:
+        warning(f"Foi encontrado um erro de conexão http {err}")
+        return False
 
 
 
