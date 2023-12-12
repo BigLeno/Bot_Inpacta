@@ -1,14 +1,11 @@
 
-from logging import basicConfig, warning, info, INFO
 from datetime import datetime, timedelta
+from logging import info, warning
 
 from modules.lib.googleservices import get_sheets
 
 # Para rodar localmente
 # from googleservices import get_sheets
-
-# Definindo o nível do log
-basicConfig(level=INFO)
 
 # Mapeia dias da semana para índices
 day_to_index = { 0 :'Segunda', 1:'Terça', 2:'Quarta', 3:'Quinta', 4:'Sexta', 5:'Sábado', 6:'Domingo'}
