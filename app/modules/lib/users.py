@@ -27,10 +27,8 @@ class Users:
         info("Lista de usuários inicializada com sucesso!")
 
     def add_users(self, user: User) -> None:
-        info("Adicionando usuário...")
         if not isinstance(user, User):
             warning("Não foi possível adicionar os usuários.")
             return
         self.list_users.append(user)
-        info("Usuário adicionado com sucesso!")
         
