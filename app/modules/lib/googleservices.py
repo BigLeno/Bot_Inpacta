@@ -48,7 +48,7 @@ class GoogleSheets:
       with open(self.token_directory, "w") as token:
         token.write(self.creds.to_json())
 
-  def get_sheets(self):
+  def get_sheets(self) -> list or bool:
     """Função para pegar os dados da planilha do googleSheets."""
     try:
       service = build("sheets", "v4", credentials=self.creds)
