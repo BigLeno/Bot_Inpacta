@@ -154,17 +154,19 @@ def send_gestores(message):
 @bot.message_handler(commands=['bolsistas'])
 def send_bolsistas(message):
     MessageData.get_data(message, bot, time_sleep, admin)
-    data = """
-    Em desenvolvimento..."""
-    bot.reply_to(message, data)
+    data = DataProcess()
+    bolsistas = sorted(data.get_bolsistas())
+    mensagem = "Os bolsistas atuais são:\n" + "\n".join(f"      {i+1}. {nome}" for i, nome in enumerate(bolsistas))
+    bot.reply_to(message, mensagem)
+   
 
 @bot.message_handler(commands=['horarios'])
 def send_horarios(message):
     MessageData.get_data(message, bot, time_sleep, admin)
     data = """
-    Os horários disponíveis são: \n   > matutino \n   > vespertino \n   > noturno \nExemplo: \n     "horarios matutino" \nExibe o horário do
+    Os horários disponíveis são: \n   - matutino \n   - vespertino \n   - noturno \nExemplo: \n     "horarios matutino" \nExibe o horário do
     "horario matutino" """
-    bot.reply_to(message, data)
+    bot.reply_to(message, data,)
 
 @bot.message_handler(func=lambda message: 
                      "horario" in message.text.lower() 
