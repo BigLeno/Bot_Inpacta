@@ -12,7 +12,7 @@ from googleapiclient.errors import HttpError
 # Somente quando for rodar localmente
 # from credentials import get_google_credentials
 
-from modules.lib.credentials import get_google_credentials
+from modules.lib.credentials import Credentials as cd
 
 from logging import warning, info
 
@@ -24,8 +24,9 @@ class GoogleSheets:
         sample_range_name (str, optional): Nome da planilha. Defaults to ''.
         sample_spreadsheet_id (str, optional): Id da planilha. Defaults to ''.
     """
+    credentials = cd()
     if not sample_range_name or not sample_spreadsheet_id:
-      self.client_directory, self.token_directory, self.scopes, self.sample_spreadsheet_id, self.sample_range_name = get_google_credentials()
+      self.client_directory, self.token_directory, self.scopes, self.sample_spreadsheet_id, self.sample_range_name = credentials.get_google_credentials()
     if sample_range_name:
       self.sample_range_name = sample_range_name
     if sample_spreadsheet_id:

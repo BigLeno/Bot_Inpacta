@@ -1,8 +1,8 @@
 
-from modules.lib.credentials import get_users_id, get_users_names
+from modules.lib.credentials import Credentials
 
 # para rodar localmente
-# from credentials import get_users_id, get_users_names
+# from credentials import Credentials
 
 from logging import warning, info
 
@@ -15,8 +15,9 @@ class User:
 class Users:
     def __init__(self) -> None:
         info("Inicializando lista de usuários...")
-        userid1, userid2, userid3, userid4, userid5, userid6 = get_users_id()
-        username1, username2, username3, username4, username5, username6 = get_users_names()
+        credentials = Credentials()
+        userid1, userid2, userid3, userid4, userid5, userid6 = credentials.get_users_id()
+        username1, username2, username3, username4, username5, username6 = credentials.get_users_names()
         self.list_users = []
         self.add_users(User(userid1, username1, 'admin'))
         self.add_users(User(userid2, username2, 'user'))
