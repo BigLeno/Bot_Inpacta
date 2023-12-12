@@ -1,6 +1,5 @@
 
 from logging import info, warning
-from requests import get
 from uuid import uuid4
 from time import sleep
 
