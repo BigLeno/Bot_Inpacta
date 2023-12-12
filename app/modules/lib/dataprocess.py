@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from logging import info, warning
 
+import pandas as pd
 
 from modules.lib.googleservices import GoogleSheets
 
@@ -110,20 +111,36 @@ class DataProcess:
                     warning("Final de semana, não tem horário.")
                     return "Final de semana, não tem horário."
                 
-    def get_horarios(self, horario):
+    def get_bolsistas(self):
 
-        if horario.lower() == 'matutino':
-            sheets = GoogleSheets(sample_range_name='Página1!B3:G9')
-        if horario.lower() == 'vespertino':
-            sheets = GoogleSheets(sample_range_name='Página1!B12:G18')
-        if horario.lower() == 'noturno':
-            sheets = GoogleSheets(sample_range_name='Página1!B21:G25')
+        sheets_matutino = GoogleSheets(sample_range_name='Página1!B3:G9')
+        sheets_vespertino = GoogleSheets(sample_range_name='Página1!B12:G18')
+        sheets_noturno = GoogleSheets(sample_range_name='Página1!B21:G25')
         
-        result = sheets.get_sheets()
+        result_matutino = pd.DataFrame(sheets_matutino.get_sheets())
+        result_vespertino = pd.DataFrame(sheets_vespertino.get_sheets())
+        result_noturno = pd.DataFrame(sheets_noturno.get_sheets())
 
-        if not result:
+        if result_matutino.empty or result_vespertino.empty or result_noturno.empty:
             return "Não foi possível acessar a planilha. Tente novamente mais tarde."
         
+        # Concatena os resultados em um único DataFrame
+        df = pd.concat([result_matutino, result_vespertino, result_noturno])
+
+       # Converte o DataFrame em uma série única
+        serie = df.values.flatten()
+
+        # Lista de nomes a serem removidos
+        remover = ['HORÁRIOS - manhã', 'Segunda-feira', 'Terça-Feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo', 'HORÁRIOS - tarde', 'HORÁRIOS - noite', 'Bolsistas', 'Bolsistas:', 'X', None, 'M12', 'M34', 'M56', 'T12', 'T34', 'T56', 'N12', 'N34', 'None', 'x']
+
+        # Converte o DataFrame em uma série única
+        serie = df.values.flatten()
+
+        # Converte a série em uma lista, remove espaços em branco e duplicatas
+        nomes = list(set([nome.strip() for sublist in serie for nome in str(sublist).split('/') if nome not in remover]))
+
+        # Retorna os nomes dos bolsistas
+        return nomes
 
 
 # if __name__ == "__main__":
