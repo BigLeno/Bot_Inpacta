@@ -1,6 +1,5 @@
 
 from logging import basicConfig, warning, info, INFO
-from json import load, dump
 from telebot import TeleBot
 from requests import get
 from uuid import uuid4
@@ -9,6 +8,7 @@ from time import strptime, sleep
 from modules.lib.credentials import get_credentials
 from modules.lib.dataprocess import get_data_from_sheets
 from modules.lib.users import Users
+from modules.lib.jsonutils import write_json, read_and_remove_first_item
 
 
 # Definindo o nível do log
@@ -29,43 +29,6 @@ info("Bot iniciado com sucesso!")
 get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot iniciado com sucesso!"}')
 sleep(time_sleep)
 
-def write_json(data, identificador, filename=cachedirectory) -> str:
-    """Função para escrever no arquivo json."""
-
-    try:
-        with open(filename, 'r') as file:
-            file_data = load(file)
-    except FileNotFoundError:
-        warning("Não encontrei o arquivo 'cache.json'.")
-        file_data = {}
-
-    file_data[identificador] = data
-
-    try:
-        with open(filename, 'w') as file:
-            dump(file_data, file)
-    except FileNotFoundError:
-        warning("Não encontrei o arquivo 'cache.json'.")
-        return "Não encontrei o arquivo json."
-
-def read_and_remove_first_item(filename=cachedirectory) -> tuple or str:
-    """Função para ler e remover o primeiro item do arquivo json."""
-    try:
-        with open(filename, 'r+') as file:
-            data = load(file)
-            items = list(data.items())
-            if len(items) == 0:
-                return "Não há mensagens para serem enviadas."
-            first_item = items.pop(0)
-            data = dict(items)
-            file.seek(0)  # Move o cursor para o início do arquivo
-            dump(data, file)
-            file.truncate()  # Remove o restante do conteúdo do arquivo
-    except FileNotFoundError:
-        warning("Não encontrei o arquivo 'cache.json'.")
-        return "Não encontrei o arquivo json."
-
-    return first_item
 
 def is_valid_date(date_str) -> bool:
     """Verifica se a data está no formato dd/mm."""
@@ -115,7 +78,7 @@ def handle_specific_chats(message) -> None:
     if "sim" in message.text.lower():
         msg = "Ok, aguarde um momento..."
         bot.reply_to(message, msg)
-        data = read_and_remove_first_item()
+        data = read_and_remove_first_item(cachedirectory)
         if isinstance(data, str):
             bot.reply_to(message, data)
             return
@@ -128,7 +91,7 @@ def handle_specific_chats(message) -> None:
         msg = "Ok, aguarde um momento..."
         bot.reply_to(message, msg)
         sleep(time_sleep)
-        data = read_and_remove_first_item()
+        data = read_and_remove_first_item(cachedirectory)
         if isinstance(data, str):
             bot.reply_to(message, data)
             return
@@ -206,7 +169,7 @@ def manage_delivery( data:tuple, user_data:dict):
     """Função para gerenciar a entrega da mensagem."""
     try:
         identificador = str(uuid4())
-        write_json(user_data, identificador)
+        write_json(user_data, identificador, cachedirectory)
     except Exception as err:
         warning(f"Não foi possível escrever no arquivo json. {err}")
         return

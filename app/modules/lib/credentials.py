@@ -1,15 +1,14 @@
-from dotenv import load_dotenv
+from logging import info, warning
 from os import getenv
-
-from logging import basicConfig, warning, info, INFO
 from typing import Tuple
+
+from dotenv import load_dotenv
+
 
 def get_credentials() -> Tuple[str, str, str, str, str]:
     """
         Função para pegar as credenciais do .env
     """
-    basicConfig(level=INFO)
-    load_dotenv()
     token = getenv('TOKEN')
     name_bot = getenv('NAME_BOT')
     admin = getenv('ADMIN')
@@ -28,8 +27,6 @@ def get_users_id() -> Tuple[str, str, str, str, str, str]:
     """
         Função para pegar as credenciais do .env
     """
-    basicConfig(level=INFO)
-    load_dotenv()
     user1 = getenv('USER_ID_1')
     user2 = getenv('USER_ID_2')
     user3 = getenv('USER_ID_3')
@@ -49,8 +46,7 @@ def get_users_names() -> Tuple[str, str, str, str, str, str]:
     """
         Função para pegar as credenciais do .env
     """
-    basicConfig(level=INFO)
-    load_dotenv()
+    
     username1 = getenv('USER_NAME_1')
     username2 = getenv('USER_NAME_2')
     username3 = getenv('USER_NAME_3')
@@ -70,8 +66,7 @@ def get_google_credentials() -> Tuple[str]:
     """
         Função para pegar o diretório do client_secret
     """
-    basicConfig(level=INFO)
-    load_dotenv()
+    
     client_directory = getenv('CLIENT_DIRECTORY')
     token_directory = getenv('TOKEN_DIRECTORY')
     scopes = getenv('SCOPES')
