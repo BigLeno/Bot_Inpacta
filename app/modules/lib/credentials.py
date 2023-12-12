@@ -2,81 +2,76 @@ from logging import info, warning
 from os import getenv
 from typing import Tuple
 
-from dotenv import load_dotenv
+class Credentials:
+    def __init__(self) -> None:
+        """Função para inicializar as credenciais."""
+        self.token = getenv('TOKEN')
+        self.name_bot = getenv('NAME_BOT')
+        self.admin = getenv('ADMIN')
+        self.absolutepath = getenv('ABSOLUTE_PATH')
+        self.cachedirectory = getenv('CACHE_DIRECTORY')
+        self.user1 = getenv('USER_ID_1')
+        self.user2 = getenv('USER_ID_2')
+        self.user3 = getenv('USER_ID_3')
+        self.user4 = getenv('USER_ID_4')
+        self.user5 = getenv('USER_ID_5')
+        self.user6 = getenv('USER_ID_6')
+        self.username1 = getenv('USER_NAME_1')
+        self.username2 = getenv('USER_NAME_2')
+        self.username3 = getenv('USER_NAME_3')
+        self.username4 = getenv('USER_NAME_4')
+        self.username5 = getenv('USER_NAME_5')
+        self.username6 = getenv('USER_NAME_6')
+        self.client_directory = getenv('CLIENT_DIRECTORY')
+        self.token_directory = getenv('TOKEN_DIRECTORY')
+        self.scopes = getenv('SCOPES')
+        self.sample_spreadsheet_id = getenv('SAMPLE_SPREADSHEET_ID')
+        self.sample_range_name = getenv('SAMPLE_RANGE_NAME')
 
+    def get_credentials(self) -> Tuple[str, str, str, str, str] or bool:
+        """
+            Função para pegar as credenciais do .env
+        """
+        if not all([self.token, self.name_bot, self.admin, self.absolutepath, self.cachedirectory]):
+            warning("Uma ou mais variáveis de ambiente do telegram estão faltando.")
+            return False
+        else:
+            info("Variáveis de ambiente do telegram carregadas com sucesso.")
 
-def get_credentials() -> Tuple[str, str, str, str, str]:
-    """
-        Função para pegar as credenciais do .env
-    """
-    token = getenv('TOKEN')
-    name_bot = getenv('NAME_BOT')
-    admin = getenv('ADMIN')
-    absolutepath = getenv('ABSOLUTE_PATH')
-    cachedirectory = getenv('CACHE_DIRECTORY')
+        return self.token, self.name_bot, self.admin, self.absolutepath, self.cachedirectory
 
-    if not token or not name_bot or not admin or not absolutepath or not cachedirectory:
-        warning("Uma ou mais variáveis de ambiente do telegram estão faltando.")
-        return False
-    else:
-        info("Variáveis de ambiente do telegram carregadas com sucesso.")
+    def get_users_id(self) -> Tuple[str, str, str, str, str, str] or bool:
+        """
+            Função para pegar as credenciais do .env
+        """
+        if not all([self.user1, self.user2, self.user3, self.user4, self.user5, self.user6]):
+            warning("Uma ou mais variáveis de ambiente de id dos usuários estão faltando.")
+            return False
+        else:
+            info("Variáveis de ambiente de id dos usuários carregadas com sucesso.")
 
-    return token, name_bot, admin, absolutepath, cachedirectory
+        return self.user1, self.user2, self.user3, self.user4, self.user5, self.user6
 
-def get_users_id() -> Tuple[str, str, str, str, str, str]:
-    """
-        Função para pegar as credenciais do .env
-    """
-    user1 = getenv('USER_ID_1')
-    user2 = getenv('USER_ID_2')
-    user3 = getenv('USER_ID_3')
-    user4 = getenv('USER_ID_4')
-    user5 = getenv('USER_ID_5')
-    user6 = getenv('USER_ID_6')
+    def get_users_names(self) -> Tuple[str, str, str, str, str, str] or bool:
+        """
+            Função para pegar as credenciais do .env
+        """
+        if not all([self.username1, self.username2, self.username3, self.username4, self.username5, self.username6]):
+            warning("Uma ou mais variáveis de ambiente de nome dos usuários estão faltando.")
+            return False
+        else:
+            info("Variáveis de ambiente de nome dos usuários carregadas com sucesso.")
 
-    if not user1 or not user2 or not user3 or not user4 or not user5 or not user6:
-        warning("Uma ou mais variáveis de ambiente de id dos usuários estão faltando.")
-        return False
-    else:
-        info("Variáveis de ambiente de id dos usuários carregadas com sucesso.")
+        return self.username1, self.username2, self.username3, self.username4, self.username5, self.username6
 
-    return user1, user2, user3, user4, user5, user6
+    def get_google_credentials(self) -> Tuple[str, str, str, str, str] or bool:
+        """
+            Função para pegar o diretório do client_secret
+        """
+        if not all([self.client_directory, self.token_directory, self.scopes, self.sample_spreadsheet_id, self.sample_range_name]):
+            warning("Uma ou mais variáveis de ambiente do google estão faltando.")
+            return False
+        else:
+            info("Variáveis de ambiente do google carregadas com sucesso.")
 
-def get_users_names() -> Tuple[str, str, str, str, str, str]:
-    """
-        Função para pegar as credenciais do .env
-    """
-    
-    username1 = getenv('USER_NAME_1')
-    username2 = getenv('USER_NAME_2')
-    username3 = getenv('USER_NAME_3')
-    username4 = getenv('USER_NAME_4')
-    username5 = getenv('USER_NAME_5')
-    username6 = getenv('USER_NAME_6')
-
-    if not username1 or not username2 or not username3 or not username4 or not username5 or not username6:
-        warning("Uma ou mais variáveis de ambiente de nome dos usuários estão faltando.")
-        return False
-    else:
-        info("Variáveis de ambiente de nome dos usuários carregadas com sucesso.")
-
-    return username1, username2, username3, username4, username5, username6
-
-def get_google_credentials() -> Tuple[str]:
-    """
-        Função para pegar o diretório do client_secret
-    """
-    
-    client_directory = getenv('CLIENT_DIRECTORY')
-    token_directory = getenv('TOKEN_DIRECTORY')
-    scopes = getenv('SCOPES')
-    sample_spreadsheet_id = getenv('SAMPLE_SPREADSHEET_ID')
-    sample_range_name = getenv('SAMPLE_RANGE_NAME')
-
-    if not client_directory or not token_directory or not scopes or not sample_spreadsheet_id or not sample_range_name:
-        warning("Uma ou mais variáveis de ambiente do google estão faltando.")
-        return False
-    else:
-        info("Variáveis de ambiente do google carregadas com sucesso.")
-
-    return client_directory, token_directory, scopes, sample_spreadsheet_id, sample_range_name
+        return self.client_directory, self.token_directory, self.scopes, self.sample_spreadsheet_id, self.sample_range_name
