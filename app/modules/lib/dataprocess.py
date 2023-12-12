@@ -111,7 +111,8 @@ class DataProcess:
                     warning("Final de semana, não tem horário.")
                     return "Final de semana, não tem horário."
                 
-    def get_bolsistas(self):
+    def get_bolsistas(self) -> list or str:
+        """Retorna a lista de bolsistas."""
 
         sheets_matutino = GoogleSheets(sample_range_name='Página1!B3:G9')
         sheets_vespertino = GoogleSheets(sample_range_name='Página1!B12:G18')
@@ -124,23 +125,33 @@ class DataProcess:
         if result_matutino.empty or result_vespertino.empty or result_noturno.empty:
             return "Não foi possível acessar a planilha. Tente novamente mais tarde."
         
-        # Concatena os resultados em um único DataFrame
+        remover = ['HORÁRIOS - manhã', 'Segunda-feira', 'Terça-Feira', 
+                   'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 
+                   'Sábado', 'Domingo', 'HORÁRIOS - tarde', 'HORÁRIOS - noite', 
+                   'Bolsistas', 'Bolsistas:', 'X', None, 'M12', 'M34', 'M56', 
+                   'T12', 'T34', 'T56', 'N12', 'N34', 'None', 'x']
+
         df = pd.concat([result_matutino, result_vespertino, result_noturno])
-
-       # Converte o DataFrame em uma série única
         serie = df.values.flatten()
 
-        # Lista de nomes a serem removidos
-        remover = ['HORÁRIOS - manhã', 'Segunda-feira', 'Terça-Feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo', 'HORÁRIOS - tarde', 'HORÁRIOS - noite', 'Bolsistas', 'Bolsistas:', 'X', None, 'M12', 'M34', 'M56', 'T12', 'T34', 'T56', 'N12', 'N34', 'None', 'x']
-
-        # Converte o DataFrame em uma série única
         serie = df.values.flatten()
 
-        # Converte a série em uma lista, remove espaços em branco e duplicatas
         nomes = list(set([nome.strip() for sublist in serie for nome in str(sublist).split('/') if nome not in remover]))
 
-        # Retorna os nomes dos bolsistas
         return nomes
+
+    def get_gestores(self):
+        """Retorna a lista de gestores."""
+        sheets = GoogleSheets(sample_range_name='Página1!B28:G31')
+
+        result = sheets.get_sheets()
+
+        if not result:
+            return "Não foi possível acessar a planilha. Tente novamente mais tarde."
+
+        result = [gestor for sublist in result for gestor in sublist]
+
+        return result
 
 
 # if __name__ == "__main__":
