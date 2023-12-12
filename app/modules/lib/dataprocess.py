@@ -2,6 +2,9 @@
 from datetime import datetime, timedelta
 from logging import info, warning
 
+from tabulate import tabulate
+import pandas as pd
+
 from modules.lib.googleservices import GoogleSheets
 
 # Para rodar localmente
@@ -108,7 +111,22 @@ class DataProcess:
                 elif day_index in [6, 7]:
                     warning("Final de semana, não tem horário.")
                     return "Final de semana, não tem horário."
-          
+                
+    def get_horarios(self, horario):
+
+        if horario.lower() == 'matutino':
+            sheets = GoogleSheets(sample_range_name='Página1!B3:G9')
+        if horario.lower() == 'vespertino':
+            sheets = GoogleSheets(sample_range_name='Página1!B12:G18')
+        if horario.lower() == 'noturno':
+            sheets = GoogleSheets(sample_range_name='Página1!B21:G25')
+        
+        result = sheets.get_sheets()
+
+        if not result:
+            return "Não foi possível acessar a planilha. Tente novamente mais tarde."
+        
+
 
 # if __name__ == "__main__":
 #   day = input("Digite o dia: ")
