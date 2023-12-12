@@ -2,8 +2,6 @@
 from datetime import datetime, timedelta
 from logging import info, warning
 
-from tabulate import tabulate
-import pandas as pd
 
 from modules.lib.googleservices import GoogleSheets
 
