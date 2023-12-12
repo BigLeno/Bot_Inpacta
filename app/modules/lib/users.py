@@ -4,12 +4,7 @@ from modules.lib.credentials import get_users_id, get_users_names
 # para rodar localmente
 # from credentials import get_users_id, get_users_names
 
-
-from logging import basicConfig, warning, info, INFO
-
-
-
-basicConfig(level=INFO)
+from logging import warning, info
 
 class User:
     def __init__(self, userid, username, privileges):
