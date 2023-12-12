@@ -32,13 +32,13 @@ user_names = [user.name for user in users.list_users]
 time_sleep = 0.2
 
 info("Bot iniciado com sucesso!")
-get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot iniciado com sucesso!"}')
+bot.send_message(admin[0].id, "Bot iniciado com sucesso!")
 sleep(time_sleep)
 
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message) -> None:
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """Olá, aqui é o Bot da Inpacta, para ver os comandos disponíveis digite:\n  /Ajuda """
     sleep(time_sleep)
     bot.reply_to(message, data)
@@ -46,7 +46,7 @@ def send_welcome(message) -> None:
 @bot.message_handler(func=lambda message: "sim" in message.text.lower() or "não" in message.text.lower() or "nao" in message.text.lower())
 def handle_specific_chats(message) -> None:
     """Função para gerenciar as mensagens específicas."""
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     if "sim" in message.text.lower():
         msg = "Ok, aguarde um momento..."
         bot.reply_to(message, msg)
@@ -56,7 +56,7 @@ def handle_specific_chats(message) -> None:
             return
         recipient = data[1]['recipient']
         msg = f'Olá {data[1]["name"]}, {message.from_user.first_name} {message.from_user.last_name} aceitou o seu pedido. \nConteúdo: {data[1]["content"]}'
-        get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={recipient}&text={msg}')
+        bot.send_message(recipient, msg)
         sleep(time_sleep)
         bot.reply_to(message, "Mensagem enviada com sucesso!")
     elif "não" in message.text.lower() or "nao" in message.text.lower():
@@ -69,13 +69,13 @@ def handle_specific_chats(message) -> None:
             return
         recipient = data[1]['recipient']
         msg = f'Olá {data[1]["name"]}, {message.from_user.first_name} {message.from_user.last_name} não aceitou o seu pedido. \nConteúdo: {data[1]["content"]}'
-        get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={recipient}&text={msg}')
+        bot.send_message(recipient, msg)
         sleep(time_sleep)
         bot.reply_to(message, "Mensagem enviada com sucesso!")
 
 @bot.message_handler(func=lambda message: "ajuda" in message.text.lower())
 def send_help(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """
     Comandos disponíveis:
     /horarios - Exibe os horários
@@ -89,19 +89,19 @@ def send_help(message):
 
 @bot.message_handler(commands=['sobre'])
 def send_sobre(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """Bot em desenvolvimento pela Inpacta, para mais informações acesse:\n    https://sites.google.com/view/inpacta/"""
     bot.reply_to(message, data)
 
 @bot.message_handler(commands=['agendar'])
 def send_agendar(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """Para agendar um horário, entre com: \n'agendar data horário conteúdo' \n   Exemplo: agendar 01/01 10:00 "encontro com o gestor" """
     bot.reply_to(message, data)
 
 @bot.message_handler(func=lambda message: "agendar" in message.text.lower())
 def handle_schedule(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     args = message.text.split()
     print(f" agendar args: {args}")
     if args[0].lower() != "agendar":
@@ -132,28 +132,28 @@ def handle_schedule(message):
             name = message.from_user.first_name + ' ' + message.from_user.last_name
             user_data = {'recipient': recipient, 'name': name, 'content': content, 'day_and_time': f'{day} {time}'}
             response = f'Entrei em contato com o(s) bolsista(s) e aguardando a resposta.'
-            MessageData.manage_delivery(data, user_data, time_sleep, cachedirectory, user_names, user_ids, token)
+            MessageData.manage_delivery(data, user_data, time_sleep, cachedirectory, user_names, user_ids, bot)
             sleep(time_sleep)
             bot.reply_to(message, response)
 
 
 @bot.message_handler(commands=['gestores'])
 def send_gestores(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """
     Em desenvolvimento..."""
     bot.reply_to(message, data)
 
 @bot.message_handler(commands=['bolsistas'])
 def send_bolsistas(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """
     Em desenvolvimento..."""
     bot.reply_to(message, data)
 
 @bot.message_handler(commands=['horarios'])
 def send_horarios(message):
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     data = """
     Os horários disponíveis são: \n   > matutino \n   > vespertino \n   > noturno \nExemplo: \n     "horarios matutino" \nExibe o horário do
     "horario matutino" """
@@ -167,7 +167,7 @@ def send_horarios(message):
                      and "/" not in message.text.lower()
                      )
 def send_horarios_matutino(message) -> None:
-    MessageData.get_data(message, token, time_sleep, admin)
+    MessageData.get_data(message, bot, time_sleep, admin)
     chatIDpessoa=message.chat.id
     bot.reply_to(message, "Aguarde um momento...")
     args = message.text.split()
@@ -180,22 +180,13 @@ def send_horarios_matutino(message) -> None:
         return
 
     if args[1].lower() == "matutino":
-        msg = "Horário do turno Matutino"
-        img = open(f"{absolutepath}modules/images/horarios-matutino.png", 'rb')
-        sleep(time_sleep)
-        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
-    
+        bot.send_photo(chatIDpessoa, open(f'{absolutepath}modules/images/horarios-matutino.png', 'rb'))
+
     if args[1].lower() == "vespertino":
-        msg = "Horário do turno Vespertino"
-        img = open(f"{absolutepath}modules/images/horarios-vespertino.png", 'rb')
-        sleep(time_sleep)
-        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
+        bot.send_photo(chatIDpessoa, open(f'{absolutepath}modules/images/horarios-vespertino.png', 'rb'))
     
     if args[1].lower() == "noturno":
-        msg = "Horário do turno Noturno"
-        img = open(f"{absolutepath}modules/images/horarios-noturno.png", 'rb')
-        sleep(time_sleep)
-        get(f'https://api.telegram.org/bot{token}/sendPhoto?chat_id={chatIDpessoa}&caption={msg}', files={'photo': img})
+        bot.send_photo(chatIDpessoa, open(f'{absolutepath}modules/images/horarios-noturno.png', 'rb'))
     
     if args[1].lower() not in ["matutino", "vespertino", "noturno"]:
         msg = "Horário inválido"
@@ -206,5 +197,5 @@ def send_horarios_matutino(message) -> None:
 
 bot.polling()
 sleep(time_sleep)
-get(f'https://api.telegram.org/bot{token}/sendmessage?chat_id={admin[0].id}&text={"Bot finalizado com sucesso!"}')
+bot.send_message(admin[0].id, "Bot finalizado com sucesso!")
 info("Bot finalizado com sucesso!")
