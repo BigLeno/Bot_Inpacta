@@ -225,26 +225,26 @@ def handle_schedule(message):
             return
         dataprocess = DataProcess()
         data = dataprocess.get_data_from_sheets(day, time)
-        if isinstance(data, str):
-            bot.reply_to(message, data)
-            return
+        # if isinstance(data, str):
+        #     bot.reply_to(message, data)
+        #     return
         
+        # else:
+        recipient = message.chat.id
+        content = ' '.join(content)
+        if  not message.from_user.last_name is None :
+            name = message.from_user.first_name
+        if not message.from_user.last_name is None:
+            name = message.from_user.first_name + ' ' + message.from_user.last_name
+        if not message.from_user.username is None:
+            name = message.from_user.username
         else:
-            recipient = message.chat.id
-            content = ' '.join(content)
-            if  not message.from_user.last_name is None :
-                name = message.from_user.first_name
-            if not message.from_user.last_name is None:
-                name = message.from_user.first_name + ' ' + message.from_user.last_name
-            if not message.from_user.username is None:
-                name = message.from_user.username
-            else:
-                name = message.chat.id
-            user_data = {'recipient': recipient, 'name': name, 'content': content, 'day_and_time': f'{day} {time}'}
-            response = f'Entrei em contato com o(s) bolsista(s) e aguardando a resposta.'
-            MessageData.manage_delivery(data, user_data, time_sleep, cachedirectory, user_names, user_ids, bot)
-            sleep(time_sleep)
-            bot.reply_to(message, response)
+            name = message.chat.id
+        user_data = {'recipient': recipient, 'name': name, 'content': content, 'day_and_time': f'{day} {time}'}
+        response = f'Entrei em contato com o(s) bolsista(s) e aguardando a resposta.'
+        MessageData.manage_delivery(data, user_data, time_sleep, cachedirectory, user_names, user_ids, bot)
+        sleep(time_sleep)
+        bot.reply_to(message, response)
 
 
 @bot.message_handler(commands=['gestores'])
