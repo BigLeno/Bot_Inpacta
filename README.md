@@ -38,36 +38,36 @@ Lembre-se de que o bot é uma ferramenta de automação e não substitui a inter
 
 ## Notas de Atualização
 
-### Versão 1.0.0 (Data de lançamento)
+### Versão 1.0.0 (07/12/2023)
 
 - Lançamento inicial do Bot_Inpacta.
 - Implementação da integração com o Google Sheets para gerenciar e fornecer informações.
 - Adicionado comando `/start` para iniciar a interação com o bot.
 
-### Versão 1.1.0 (Data de lançamento)
+### Versão 1.1.0 (09/12/2023)
 
 - Adicionado comando `/gestores` para listar os gestores atuais.
 - Melhorada a performance da integração com o Google Sheets.
 - Corrigido bug que causava falha ao tentar acessar a planilha quando a conexão com a internet estava instável.
 
-### Versão 1.2.0 (Data de lançamento)
+### Versão 1.2.0 (10/12/2023)
 
 - Adicionado comando `/bolsistas` para listar os bolsistas atuais.
 - Melhorada a formatação das mensagens enviadas pelo bot.
 - Corrigido bug que causava falha ao tentar listar os bolsistas quando a planilha estava vazia.
 
-### Versão 1.3.0 (Data de lançamento)
+### Versão 1.3.0 (11/12/2023)
 
 - Adicionado comando `/horarios` para consultar os horários dos gestores.
 - Melhorada a afetividade do bot em suas respostas.
 - Corrigido bug que causava falha ao tentar listar os gestores quando a planilha estava vazia.
 
-### Versão 1.4.0 (Data de lançamento)
+### Versão 1.4.0 (11/12/2023)
 
 - Adicionado comando `/agendar` para agendar reuniões com os gestores.
 - Melhorada a gestão de exceções para evitar falhas inesperadas.
 
-### Versão 1.5.0 (Data de lançamento)
+### Versão 1.5.0 (12/12/2023)
 
 - Melhorada a afetividade do bot em suas respostas.
 - Corrigido bug que causava falha ao tentar agendar uma reunião para um horário inválido.
