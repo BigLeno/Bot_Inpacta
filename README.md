@@ -46,13 +46,13 @@ Lembre-se de que o bot é uma ferramenta de automação e não substitui a inter
 
 ### Versão 1.1.0 (Data de lançamento)
 
-- Adicionado comando `/get_gestores` para listar os gestores atuais.
+- Adicionado comando `/gestores` para listar os gestores atuais.
 - Melhorada a performance da integração com o Google Sheets.
 - Corrigido bug que causava falha ao tentar acessar a planilha quando a conexão com a internet estava instável.
 
 ### Versão 1.2.0 (Data de lançamento)
 
-- Adicionado comando `/get_bolsistas` para listar os bolsistas atuais.
+- Adicionado comando `/bolsistas` para listar os bolsistas atuais.
 - Melhorada a formatação das mensagens enviadas pelo bot.
 - Corrigido bug que causava falha ao tentar listar os bolsistas quando a planilha estava vazia.
 
