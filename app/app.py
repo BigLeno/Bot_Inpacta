@@ -1,5 +1,5 @@
 
-from logging import basicConfig, warning, info, INFO
+from logging import basicConfig, info, INFO
 from dotenv import load_dotenv
 
 # Carregando as credenciais do .env
@@ -9,7 +9,6 @@ load_dotenv()
 basicConfig(level=INFO)
 
 from telebot import TeleBot
-from requests import get
 from time import sleep
 
 from modules.lib.jsonutils import JsonUtils
@@ -43,7 +42,7 @@ def send_welcome(message) -> None:
     sleep(time_sleep)
     bot.reply_to(message, data)
 
-@bot.message_handler(func=lambda message: message.text.lower() not in Validation.commands and "/" not in message.text)
+@bot.message_handler(func=Validation.is_valid_input)
 def send_prompt_text(message) -> None:
     MessageData.get_data(message, bot, time_sleep, admin)
     bot.reply_to(message, Validation.is_valid_text(message))
