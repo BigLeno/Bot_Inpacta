@@ -1,5 +1,4 @@
 
-from fuzzywuzzy.fuzz import ratio
 from time import strptime
 
 class Validation:
