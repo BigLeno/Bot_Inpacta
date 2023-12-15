@@ -78,6 +78,11 @@ Lembre-se de que o bot é uma ferramenta de automação e não substitui a inter
 - Refatorado o método de afetividade para melhorar a interação do bot.
 - Corrigidos vários bugs para melhorar a estabilidade e a performance.
 
+### Versão 1.6.1 (15/12/2023)
+
+- Refatorado o bot e adicionando abstração ao código completo.
+- Corrigidos vários bugs para melhorar a estabilidade e a performance (novamente).
+
 ## Contribuição
 
 Sua contribuição é muito bem-vinda! Se você tem ideias para novas funcionalidades ou melhorias e gostaria de contribuir para o projeto, aqui estão algumas maneiras de fazer isso:
