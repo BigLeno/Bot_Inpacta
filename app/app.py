@@ -225,7 +225,7 @@ def handle_schedule(message):
             return
         dataprocess = DataProcess()
         data = dataprocess.get_data_from_sheets(day, time)
-        if isinstance(data, str):
+        if data in ["Não tem bolsista neste horário.", "Horário inválido.", "Dia inválido.", "Final de semana, não tem horário.", "Não foi possível acessar a planilha. Tente novamente mais tarde."]:
             bot.reply_to(message, data)
             return
         

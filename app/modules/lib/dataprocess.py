@@ -60,7 +60,7 @@ class DataProcess:
                     
         return min(self.time_to_interval.keys(), key=lambda interval: abs(hour - self.time_to_interval[interval][0]))
 
-    def get_data_from_sheets(self, day, time):
+    def get_data_from_sheets(self, day, time) -> str:
 
         sheets = GoogleSheets()
 
