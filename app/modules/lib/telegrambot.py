@@ -36,7 +36,7 @@ class BotinPACTA:
         @self.bot.message_handler(func=Validation.is_valid_input)
         def send_prompt_text(message) -> None:
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
-            self.bot.reply_to(message, Validation.is_valid_text(message))
+            self.bot.reply_to(message, Validation.is_valid_text(message.text))
             
     def get_help(self) -> None:
         """Método que recebe o comando "/ajuda" ou "ajuda"."""
