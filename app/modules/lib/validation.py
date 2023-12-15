@@ -4,7 +4,7 @@ from time import strptime
 
 class Validation:
     """Classe para validação de dados."""
-    commands = ["sim", "não", "nao", "ajuda", "start", "sobre", "agendar", "gestores", "bolsistas", "horarios", "horario", "horário", "horários", ]
+    commands = ["sim", "não", "nao", "ajuda", "start", "sobre", "agendar", "gestores", "bolsistas", "horarios", "horario", "horário", "horários"]
 
     answers = {
         "quem é o seu pai?": "Meu pai é o @Rutileno_Gabriel, bolsista da Inpacta!",
