@@ -1,5 +1,6 @@
 
 from time import strptime
+from difflib import get_close_matches
 
 class Validation:
     """Classe para validação de dados."""
@@ -53,7 +54,15 @@ class Validation:
     @classmethod
     def is_valid_text(cls, message:str) -> str:
         """Verifica se o texto é válido."""
-        return Validation.answers.get(message.text, 'Desculpe, eu não entendi. Você pode repetir?')
+        response = cls.answers.get(message, None)
+        if response is None:
+            # Encontre a palavra mais próxima na lista
+            closest_word = get_close_matches(message, cls.answers.keys(), n=1)
+            if closest_word:
+                response = f"Você quis dizer {closest_word[0]}?"
+            else:
+                response = 'Desculpe, eu não entendi. Você pode repetir?'
+        return response
     
     @classmethod
     def is_valid_input(cls, message:str) -> bool:

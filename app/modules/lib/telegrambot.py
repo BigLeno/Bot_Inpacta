@@ -31,6 +31,13 @@ class BotinPACTA:
             sleep(self.time_sleep)
             self.bot.reply_to(message, data)
     
+    def get_prompt(self) -> None:
+        """Método que lida com o prompt do bot."""
+        @self.bot.message_handler(func=Validation.is_valid_input)
+        def send_prompt_text(message) -> None:
+            MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
+            self.bot.reply_to(message, Validation.is_valid_text(message.text))
+            
     def get_help(self) -> None:
         """Método que recebe o comando "/ajuda" ou "ajuda"."""
         @self.bot.message_handler(func=lambda message: "ajuda" in message.text.lower())
@@ -206,6 +213,7 @@ class BotinPACTA:
     def run(self) -> None:
         """Método que inicia o bot."""
         self.get_started()
+        self.get_prompt()
         self.get_help()
         self.get_about()
         self.get_schedule()
