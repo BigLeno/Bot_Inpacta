@@ -3,3 +3,4 @@ data/
 .env
 teste.py
 startupBot.sh
+crontab.txt
