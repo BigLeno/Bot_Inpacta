@@ -3,7 +3,7 @@ from time import strptime
 
 class Validation:
     """Classe para validação de dados."""
-    commands = ["sim", "não", "nao", "ajuda", "start", "sobre", "agendar", "gestores", "bolsistas", "horarios", "horario", "horário", "horários"]
+    commands = ["sim", "não", "nao", "ajuda", "start", "sobre", "agendar", "gestores", "bolsistas", "horarios", "horario", "horário", "horários", "matutino", "vespertino", "noturno"]
 
     answers = {
         "quem é o seu pai?": "Meu pai é o @Rutileno_Gabriel, bolsista da Inpacta!",
@@ -54,3 +54,15 @@ class Validation:
     def is_valid_text(cls, message:str) -> str:
         """Verifica se o texto é válido."""
         return Validation.answers.get(message.text, 'Desculpe, eu não entendi. Você pode repetir?')
+    
+    @classmethod
+    def is_valid_input(cls, message:str) -> bool:
+        """Verifica se a entrada é válida"""
+        formatted_message = message.text.lower()
+        if formatted_message.split()[0] not in Validation.commands and "/" not in formatted_message:
+            return True
+        if len(formatted_message.split()) == 2 and formatted_message.split()[0] in ["horarios", "horario", "horários", "horário"]:
+            if formatted_message.split()[1] not in Validation.commands:
+                return True
+            
+        
