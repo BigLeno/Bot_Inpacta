@@ -1,6 +1,7 @@
 
 from logging import basicConfig, warning, INFO
 from dotenv import load_dotenv
+from time import sleep
 
 load_dotenv()
 basicConfig(level=INFO)
@@ -16,10 +17,14 @@ users = Users()
 
 bot = BotinPACTA(credentials, users)
 
-try:
-    bot.run()
-except KeyboardInterrupt:
-    bot.kill()
-except Exception as e:
-    warning(f"Error: {e}")
-    bot.reboot()
+while True:
+    try:
+        bot.run()
+    except KeyboardInterrupt:
+        bot.kill()
+        break
+    except Exception as e:
+        warning(f"Error: {e}")
+        bot.bot_helper(f"Ocorreu um erro {e}, o bot foi reiniciado!")  
+        bot.reboot()
+

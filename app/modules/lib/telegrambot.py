@@ -36,7 +36,7 @@ class BotinPACTA:
         @self.bot.message_handler(func=Validation.is_valid_input)
         def send_prompt_text(message) -> None:
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
-            self.bot.reply_to(message, Validation.is_valid_text(message.text))
+            self.bot.reply_to(message, Validation.is_valid_text(message))
             
     def get_help(self) -> None:
         """Método que recebe o comando "/ajuda" ou "ajuda"."""
@@ -237,3 +237,7 @@ class BotinPACTA:
         self.kill()
         self.run()
 
+    def bot_helper(self, message) -> None:
+        """Método que lida com o comando "/bot"."""
+        bot = TeleBot(self.token)
+        bot.send_message(self.admin[0].id, message)
