@@ -17,14 +17,19 @@ users = Users()
 
 bot = BotinPACTA(credentials, users)
 
-while True:
+def main():
     try:
+        sleep(0.5)
         bot.run()
     except KeyboardInterrupt:
         bot.kill()
-        break
     except Exception as e:
         warning(f"Error: {e}")
+        sleep(0.5)
         bot.bot_helper(f"Ocorreu um erro {e}, o bot foi reiniciado!")  
-        bot.reboot()
+        main()
+
+if __name__ == "__main__":
+    main()
+        
 
