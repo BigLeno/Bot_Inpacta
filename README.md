@@ -83,6 +83,11 @@ Lembre-se de que o bot é uma ferramenta de automação e não substitui a inter
 - Refatorado o bot e adicionando abstração ao código completo.
 - Corrigidos vários bugs para melhorar a estabilidade e a performance (novamente).
 
+### Versão 1.7.0 (20/12/2023)
+
+- Adicionando funcionalidades de verificação de datas e horários, modo `recesso` e modo `horário reduzido`.
+- Corrigindo bugs e melhorando a estabilidade e performance do bot (novamente).
+
 ## Contribuição
 
 Sua contribuição é muito bem-vinda! Se você tem ideias para novas funcionalidades ou melhorias e gostaria de contribuir para o projeto, aqui estão algumas maneiras de fazer isso:
