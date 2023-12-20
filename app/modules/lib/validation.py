@@ -1,8 +1,6 @@
 
 from difflib import get_close_matches
-from datetime import datetime
-from time import strptime
-
+from datetime import datetime, timedelta
 
 class Validation:
     """Classe para validação de dados."""
@@ -97,7 +95,8 @@ class Validation:
         for fmt in formats:
             try:
                 time_obj = datetime.strptime(time_str, fmt)
-                now = datetime.now()
+                #now = datetime.now()
+                now = datetime.now() - timedelta(hours=3)
                 time_obj = time_obj.replace(year=now.year, month=now.month, day=now.day)
                 if time_obj < now:
                     return "O horário inserido já passou. Por favor, insira um horário futuro."
