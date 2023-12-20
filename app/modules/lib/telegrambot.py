@@ -88,8 +88,8 @@ class BotinPACTA:
                     self.bot.reply_to(message, Validation.is_valid_date(day))
                     return
                 
-                if not Validation.is_valid_time(time):
-                    self.bot.reply_to(message, ' Horário inválido. Use o formato hh:mm.')
+                if Validation.is_valid_time(time) in ["O intervalo entre o horário atual e o horário escolhido deve ser maior que 2 horas.", "Horário inválido. Use o formato hh:mm.", "O horário inserido já passou. Por favor, insira um horário futuro."]:
+                    self.bot.reply_to(message, Validation.is_valid_time(time))
                     return
                 dataprocess = DataProcess()
                 data = dataprocess.get_data_from_sheets(day, time)

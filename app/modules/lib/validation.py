@@ -92,15 +92,24 @@ class Validation:
 
     @classmethod
     def is_valid_time(cls, time_str) -> bool:
-        """Verifica se o horário está no formato hh:mm."""
+        """Verifica se o horário está no formato hh:mm e se o intervalo entre o horário atual e o time_str é maior que 2 horas."""
         formats = ['%H:%M', '%Hh', '%Hh%M', '%HH', '%HH%M']
         for fmt in formats:
             try:
-                strptime(time_str, fmt)
-                return True
+                time_obj = datetime.strptime(time_str, fmt)
+                now = datetime.now()
+                time_obj = time_obj.replace(year=now.year, month=now.month, day=now.day)
+                if time_obj < now:
+                    return "O horário inserido já passou. Por favor, insira um horário futuro."
+                diff = time_obj - now
+                hours_diff = diff.total_seconds() / 3600
+                if hours_diff >= 2:
+                    return True
+                else:
+                    return "O intervalo entre o horário atual e o horário escolhido deve ser maior que 2 horas."
             except ValueError:
                 continue
-        return False
+        return "Horário inválido. Use o formato hh:mm."
     
     @classmethod
     def is_valid_text(cls, message:str) -> str:
