@@ -213,10 +213,17 @@ class BotinPACTA:
     
     def get_time_break(self) -> None:
         """Método que lida com o período de recesso."""
-        @self.bot.message_handler(func=lambda message: Validation.is_regular_hours())
+        @self.bot.message_handler(func=lambda message: Validation.is_time_to_break())
         def send_time_break(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             self.bot.reply_to(message, "Estamos em recesso entre os dias 22/12 e 14/01. \nNão há horários disponíveis. \nAguarde o retorno das atividades. \nObrigado!")
+
+    def get_time_reduced(self) -> None:
+        """Método que lida com o período de horário reduzido."""
+        @self.bot.message_handler(func=lambda message: Validation.is_regular_hours())
+        def send_time_reduced(message):
+            MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
+            self.bot.reply_to(message, "Estamos em horário reduzido entre os dias 15/01 e 23/02. \nOs horários disponíveis são diferentes. \nObrigado!")
     
     def run(self) -> None:
         """Método que inicia o bot."""
@@ -232,6 +239,7 @@ class BotinPACTA:
         self.get_horarios()
         self.handle_horarios()
         self.get_time_break()
+        self.get_time_reduced()
         info("Bot iniciado com sucesso!")
         self.bot.polling()
         self.bot.send_message(self.admin[0].id, "Bot finalizado com sucesso!")
