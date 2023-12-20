@@ -39,8 +39,8 @@ class BotinPACTA:
             self.bot.reply_to(message, Validation.is_valid_text(message.text))
             
     def get_help(self) -> None:
-        """Método que recebe o comando "/ajuda" ou "ajuda"."""
-        @self.bot.message_handler(func=lambda message: "ajuda" in message.text.lower())
+        """Método que recebe o comando "/ajuda"."""
+        @self.bot.message_handler(func=lambda message: "/ajuda" in message.text.lower()  and not Validation.is_time_to_break())
         def send_help(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             data = """
@@ -56,21 +56,21 @@ class BotinPACTA:
 
     def get_about(self) -> None:
         """Método que recebe o comando "/sobre"."""
-        @self.bot.message_handler(commands=['sobre'])
+        @self.bot.message_handler(func=lambda message: "/sobre" in message.text.lower()  and not Validation.is_regular_hours())
         def send_sobre(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             self.bot.reply_to(message, """Bot em desenvolvimento pela Inpacta, para mais informações acesse:\n    https://sites.google.com/view/inpacta/""")
         
     def get_schedule(self) -> None:
         """Método que recebe o comando "/agendar"."""
-        @self.bot.message_handler(commands=['agendar'])
+        @self.bot.message_handler(func=lambda message: "/agendar" in message.text.lower() and not Validation.is_regular_hours())
         def send_agendar(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             self.bot.reply_to(message, """Para agendar um horário, entre com: \n'agendar data horário conteúdo' \n   Exemplo: agendar 01/01 10:00 "encontro com o gestor" """)
 
     def manage_schedule(self) -> None:
         """Método que lida com o "agendar"."""
-        @self.bot.message_handler(func=lambda message: "agendar" in message.text.lower())
+        @self.bot.message_handler(func=lambda message: "agendar" in message.text.lower() and not Validation.is_regular_hours())
         def handle_schedule(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             args = message.text.split()
@@ -84,12 +84,12 @@ class BotinPACTA:
                 
                 day, time, content = args[1], args[2], args[3:]
 
-                if not Validation.is_valid_date(day):
-                    self.bot.reply_to(message, "Data inválida. Use o formato dd/mm.")
+                if Validation.is_valid_date(day) in ["Não é possível agendar para uma data passada.", "Estamos em recesso entre os dias 22/12 e 14/01. Por favor, escolha outra data. \n\nCaso seja urgente, entre em contato conosco via instagram \n     https://www.instagram.com/inpacta/."]:
+                    self.bot.reply_to(message, Validation.is_valid_date(day))
                     return
                 
                 if not Validation.is_valid_time(time):
-                    self.bot.reply_to(message, "Horário inválido. Use o formato hh:mm.")
+                    self.bot.reply_to(message, ' Horário inválido. Use o formato hh:mm.')
                     return
                 dataprocess = DataProcess()
                 data = dataprocess.get_data_from_sheets(day, time)
@@ -116,7 +116,7 @@ class BotinPACTA:
 
     def get_especific_chats(self) -> None:
         """Método que lida com as respostas dos bolsistas."""
-        @self.bot.message_handler(func=lambda message: "sim" in message.text.lower() or "não" in message.text.lower() or "nao" in message.text.lower())
+        @self.bot.message_handler(func=lambda message: "sim" in message.text.lower() or "não" in message.text.lower() or "nao" in message.text.lower() and not Validation.is_regular_hours())
         def handle_specific_chats(message) -> None:
             """Função para gerenciar as mensagens específicas."""
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
@@ -148,7 +148,7 @@ class BotinPACTA:
 
     def get_gestores(self) -> None:
         """Método que lida com o "/gestores"."""
-        @self.bot.message_handler(commands=['gestores'])
+        @self.bot.message_handler(func=lambda message: "/gestores" in message.text.lower() and not Validation.is_regular_hours())
         def send_gestores(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             gestores = sorted(DataProcess().get_gestores())
@@ -157,7 +157,7 @@ class BotinPACTA:
 
     def get_bolsistas(self) -> None:
         """Método que lida com o "/bolsistas"."""
-        @self.bot.message_handler(commands=['bolsistas'])
+        @self.bot.message_handler(func=lambda message: "/bolsistas" in message.text.lower() and not Validation.is_regular_hours())
         def send_bolsistas(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             bolsistas = sorted(DataProcess().get_bolsistas())
@@ -166,7 +166,7 @@ class BotinPACTA:
 
     def get_horarios(self) -> None:
         """Método que lida com o "/horarios"."""
-        @self.bot.message_handler(commands=['horarios'])
+        @self.bot.message_handler(func=lambda message: "/horarios" in message.text.lower() and not Validation.is_regular_hours())
         def send_horarios(message):
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
             data = """
@@ -181,7 +181,8 @@ class BotinPACTA:
                      or "horário" in message.text.lower() 
                      or "horários" in message.text.lower() 
                      or "horarios" in message.text.lower() 
-                     and "/" not in message.text.lower()
+                     and "/" not in message.text.lower() 
+                     and not Validation.is_regular_hours()
                      )
         def send_horarios_matutino(message) -> None:
             MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
@@ -210,6 +211,13 @@ class BotinPACTA:
                 sleep(self.time_sleep)
                 self.bot.reply_to(message, msg)
     
+    def get_time_break(self) -> None:
+        """Método que lida com o período de recesso."""
+        @self.bot.message_handler(func=lambda message: Validation.is_regular_hours())
+        def send_time_break(message):
+            MessageData.get_data(message, self.bot, self.time_sleep, self.admin)
+            self.bot.reply_to(message, "Estamos em recesso entre os dias 22/12 e 14/01. \nNão há horários disponíveis. \nAguarde o retorno das atividades. \nObrigado!")
+    
     def run(self) -> None:
         """Método que inicia o bot."""
         self.get_started()
@@ -223,6 +231,7 @@ class BotinPACTA:
         self.get_bolsistas()
         self.get_horarios()
         self.handle_horarios()
+        self.get_time_break()
         info("Bot iniciado com sucesso!")
         self.bot.polling()
         self.bot.send_message(self.admin[0].id, "Bot finalizado com sucesso!")

@@ -1,6 +1,8 @@
 
-from time import strptime
 from difflib import get_close_matches
+from datetime import datetime
+from time import strptime
+
 
 class Validation:
     """Classe para validação de dados."""
@@ -27,17 +29,66 @@ class Validation:
         }
 
     @classmethod
-    def is_valid_date(cls, date_str) -> bool:
-        """Verifica se a data está no formato dd/mm."""
+    def is_break(cls, date_str) -> bool:
+        """Verifica se estamos no período de recesso."""
+        date = datetime.strptime(date_str, '%d/%m')
+        start_recesso = datetime(date.year, 12, 22)
+        end_recesso = datetime(date.year + 1, 1, 14)
+        return start_recesso <= date <= end_recesso
+    
+    @classmethod
+    def is_time_to_break(cls) -> bool:
+        """Verifica se estamos no período de recesso."""
+        date = datetime.now()
+        start_recesso = datetime(date.year, 12, 22)
+        end_recesso = datetime(date.year + 1, 1, 14)
+        return start_recesso <= date <= end_recesso
+
+    @classmethod
+    def is_reduced_hours(cls, date_str:str) -> bool:
+        """Verifica se estamos no período de horário reduzido."""
+        date = datetime.strptime(date_str, '%d/%m')
+        start_reduced_hours = datetime(date.year, 1, 15)
+        end_reduced_hours = datetime(date.year, 2, 23)
+        return start_reduced_hours <= date <= end_reduced_hours
+
+    @classmethod
+    def is_time_to_reduce_hours(cls) -> bool:
+        """Verifica se estamos no período de horário reduzido."""
+        date = datetime.now()
+        start_reduced_hours = datetime(date.year, 1, 15)
+        end_reduced_hours = datetime(date.year, 2, 23)
+        return start_reduced_hours <= date <= end_reduced_hours
+
+    @classmethod
+    def is_regular_hours(cls) -> bool:
+        """Verifica se estamos no período de horário regular."""
+        if cls.is_time_to_break() or cls.is_time_to_reduce_hours():
+            return True
+        
+        return False
+
+    @classmethod
+    def is_valid_date(cls, date_str:str) -> bool:
+        """Verifica se a data é válida e se é a partir do dia atual."""
 
         if date_str in ['hoje', 'amanhã', 'amanha']:
             return True
 
         try:
-            strptime(date_str, '%d/%m')
-            return True
+            date = datetime.strptime(date_str, '%d/%m')
+            now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            date = date.replace(year=now.year)
+
+            if date < now:
+                return "Não é possível agendar para uma data passada."
+            else:
+                if cls.is_break(date_str):
+                    return "Estamos em recesso entre os dias 22/12 e 14/01. Por favor, escolha outra data. \n\nCaso seja urgente, entre em contato conosco via instagram \n     https://www.instagram.com/inpacta/."
+                return True
+            
         except ValueError:
-            return False
+            return "Data inválida. Use o formato dd/mm."
 
     @classmethod
     def is_valid_time(cls, time_str) -> bool:
